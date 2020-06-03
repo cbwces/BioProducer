@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 import re
 import copy
 import json
@@ -13,10 +10,6 @@ from nltk.stem import SnowballStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk import pos_tag
 from transformers import BertTokenizer
-
-
-# In[2]:
-
 
 def load_file(path):    # 读取文本
 
@@ -152,16 +145,8 @@ def file_preprocess(text):    # 文本预处理
     
     return text
 
-
-# In[3]:
-
-
 animal_text = load_file("../datas/raw/wikidatas_animals.json")
 plant_text = load_file("../datas/raw/0wikidatas_plants.json")
-
-
-# In[4]:
-
 
 # 词标记化（转化为LSTM+CRF结构输入格式）
 animal_text_word_token = copy.deepcopy(animal_text)
@@ -180,20 +165,12 @@ for text_dict in [animal_text_word_token, plant_text_word_token]:
             text_container.append((wd, tg))
         text_dict[i] = text_container
 
-
-# In[5]:
-
-
 # 二进制形式保存
 with open('../datas/animal_text_word_token.pkl', 'wb') as bfile:
     pickle.dump(animal_text_word_token, bfile, protocol=4)
 
 with open('../datas/plant_text_word_token.pkl', 'wb') as bfile:
     pickle.dump(plant_text_word_token, bfile, protocol=4)
-
-
-# In[4]:
-
 
 # 词标记化（转化为BERT结构输入格式）
 animal_text_bert_token = copy.deepcopy(animal_text)
@@ -211,14 +188,9 @@ for text_dict in [animal_text_bert_token, plant_text_bert_token]:
             text_container.append((bert_tokens, tg))
         text_dict[i] = text_container
 
-
-# In[6]:
-
-
 # 二进制形式保存
 with open('../datas/token/animal_text_bert_token.pkl', 'wb') as bfile:
     pickle.dump(animal_text_bert_token, bfile, protocol=4)
 
 with open('../datas/token/plant_text_bert_token.pkl', 'wb') as bfile:
     pickle.dump(plant_text_bert_token, bfile, protocol=4)
-
