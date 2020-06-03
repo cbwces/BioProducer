@@ -1,18 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[28]:
-
-
 import pickle
 from tqdm import tqdm
 from nltk.corpus import conll2000
 from nltk.chunk import tree2conlltags
 from nltk.stem import SnowballStemmer
-
-
-# In[25]:
-
 
 def extract_tuple(chunked_sent):
     # 根据IOB提取conll2000语料的三元组
@@ -97,19 +90,10 @@ def extract_tuple(chunked_sent):
                     
     return (first_container, second_container, third_container)
 
-
-# In[26]:
-
-
 all_tuple_container = []
 for tree in tqdm(conll2000.chunked_sents()):
     all_tuple_container.append(extract_tuple(tree2conlltags(tree)))
 
-
-# In[31]:
-
-
 # 二进制形式保存
 with open('../datas/tuple/conll2000_tuple.pkl', 'wb') as bfile:
     pickle.dump(all_tuple_container, bfile, protocol=4)
-
