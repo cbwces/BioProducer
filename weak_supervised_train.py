@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
-
-
 import gc
 from tqdm import tqdm
 import pickle
@@ -18,10 +15,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from torchcrf import CRF
-
-
-# In[8]:
-
 
 def str_encoder(raw_list, max_pad=99999):
     # 将字符进行编码， raw_list:经过标记的语料
@@ -51,10 +44,6 @@ def text_padding(real_value_sequence, max_pad):
     
     else:
         return real_value_sequence[:max_pad]
-
-
-# In[43]:
-
 
 class ConllDataset(Dataset):
     # 构建输入神经网路的数据集
@@ -88,10 +77,6 @@ class TagNet(nn.Module):
         
         return output
 
-
-# In[44]:
-
-
 # 提取coll2000语料的词性和IOB标记，逐句存放
 train_part_speech_list = []
 train_iob_list = []
@@ -105,10 +90,6 @@ for tree in conll2000.chunked_sents():
     train_part_speech_list.append(train_part_speech_in_sent)
     train_iob_list.append(train_iob_in_sent)
 
-
-# In[45]:
-
-
 # 分别对词性和IOB进行编码
 encoded_part_speech, part_speech_encoder = str_encoder(train_part_speech_list)
 encoded_iob, iob_encoder = str_encoder(train_iob_list)
@@ -116,10 +97,6 @@ encoded_iob, iob_encoder = str_encoder(train_iob_list)
 # 完成数据输入准备
 conll_corpus_dataset = ConllDataset(encoded_part_speech, encoded_iob)
 conll_loader = DataLoader(conll_corpus_dataset, batch_size=32, shuffle=True, num_workers=multiprocessing.cpu_count())
-
-
-# In[46]:
-
 
 # 统计词性和iob的种类个数
 sample_num = encoded_part_speech.shape[0]
@@ -149,10 +126,6 @@ for epk in range(EPOCHS):
         
     torch.cuda.empty_cache()
 
-
-# In[47]:
-
-
 def wikidata_dataset(dic_datas, encoder):
     # 对维基数据进行编码
     data_dict = defaultdict(list)
@@ -168,10 +141,6 @@ def wikidata_dataset(dic_datas, encoder):
             
     return data_dict
 
-
-# In[48]:
-
-
 gc.collect()
 
 # 读取词标注文本
@@ -180,16 +149,8 @@ with open("../datas/token/animal_text_word_token.pkl", 'rb') as f:
 with open("../datas/token/plant_text_word_token.pkl", 'rb') as f:
     plant_tokens = pickle.load(f)
 
-
-# In[49]:
-
-
 animal_tokens_dict = wikidata_dataset(animal_tokens, part_speech_encoder)
 plant_tokens_dict = wikidata_dataset(plant_tokens, part_speech_encoder)
-
-
-# In[ ]:
-
 
 example = np.zeros((len(animal_tokens_dict['Ecology']), len(encoded_part_speech)))
 for p, i in enumerate(animal_tokens_dict['Ecology']):
@@ -201,10 +162,6 @@ with torch.no_grad():
 with open('../datas/tags/animal_tager.pkl, 'wb') as bfile:
     pickle.dump(all_tuple_container, bfile, protocol=4)
 
-
-# In[88]:
-
-
 example = np.zeros((len(plant_tokens_dict['Ecology']), len(encoded_part_speech)))
 for p, i in enumerate(plant_tokens_dict['Ecology']):
     example[p] = text_padding(i, len(encoded_part_speech))
@@ -214,4 +171,3 @@ with torch.no_grad():
 
 with open('../datas/tags/plant_tager.pkl, 'wb') as bfile:
     pickle.dump(all_tuple_container, bfile, protocol=4)
-
